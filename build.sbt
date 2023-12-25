@@ -2,8 +2,13 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.12"
 
+val testDeps = Seq(
+  "org.scalatest" %% "scalatest" % "3.2.15"
+).map(_ % Test)
+
 lazy val root = (project in file("."))
   .settings(
-    name := "employee-api",
-    idePackagePrefix := Some("com/test/employee")
+    name := "employee-api"
+  ).settings(
+    libraryDependencies ++= testDeps
   )
