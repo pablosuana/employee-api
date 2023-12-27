@@ -1,3 +1,7 @@
 package com.domain
 
-trait EmployeeBase
+import java.util.UUID
+
+trait EmployeeBase {
+  val id: UUID
+}
