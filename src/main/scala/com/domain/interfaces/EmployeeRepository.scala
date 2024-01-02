@@ -19,6 +19,8 @@ trait EmployeeRepository[DbResponseType <: DbResponse, EmployeeType <: EmployeeB
 
   def getAllEmployees: Future[Seq[DbResponseType]]
 
+  def isEmailInDb(email: String): Future[Option[DbResponseType]]
+
   def getEmployeeById(id: UUID): Future[Option[DbResponseType]]
 
   def createEmployee(employee: EmployeeType, createdAt: String): Future[Boolean]

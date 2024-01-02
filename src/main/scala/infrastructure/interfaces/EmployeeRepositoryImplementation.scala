@@ -67,7 +67,13 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
     val queryToGetRecord = GetAllPostgresQuery(dbConnectionConfig.tableName)
     logger.info(s"Retrieved all employees from DB!")
     dbOperations.getRecordsFromDb(queryToGetRecord)
+  }
 
+  // TODO remove duplicated code
+  def isEmailInDb(email: String): Future[Option[PostgresResponse]] = {
+    val queryToGetRecord                               = GetOnePostgresQuery(None, Some(email), dbConnectionConfig.tableName)
+    val resultFromQuery: Future[Seq[PostgresResponse]] = dbOperations.getRecordsFromDb(queryToGetRecord)
+    resultFromQuery.map(_.headOption)
   }
 
   def getEmployeeById(id: UUID): Future[Option[PostgresResponse]] = {

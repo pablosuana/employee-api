@@ -1,3 +1,5 @@
 package com.domain.Entities
 
-trait EmployeeBase
+trait EmployeeBase {
+  val email: String
+}

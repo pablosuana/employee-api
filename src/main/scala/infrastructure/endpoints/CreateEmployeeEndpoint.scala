@@ -2,7 +2,7 @@ package infrastructure.endpoints
 
 import com.domain.Entities.Employee
 import com.domain.interfaces.EmployeeRepository
-import com.domain.useCases.CreateEmployeeUseCase
+import com.domain.useCases.{CreateEmployeeUseCase, EmailAlreadyInDbUseCase}
 import infrastructure.dto.client.ErrorResponse
 import infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
 import infrastructure.dto.client.createEmployee.ServiceRequestJsonFormatter.serviceRequestJF
@@ -15,7 +15,7 @@ import sttp.model.headers.WWWAuthenticateChallenge
 import sttp.tapir.generic.auto.schemaForCaseClass
 import sttp.tapir.json.spray.jsonBody
 import sttp.tapir.model.UsernamePassword
-import sttp.tapir.{auth, endpoint, statusCode, Endpoint}
+import sttp.tapir.{Endpoint, auth, endpoint, statusCode}
 
 import java.sql.Timestamp
 import java.util.Date
@@ -49,7 +49,7 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
+  def serverLogicIfEmailNotInDb(input: ServiceRequest)(implicit ec: ExecutionContext): Future[Either[ErrorResponse, ServiceResponse]] = {
     try {
       val timestamp = new Timestamp(new Date().getTime)
       val employee = Employee(
@@ -71,6 +71,18 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
         logger.info(s"Exception when trying to create an user: ${e.getMessage}")
         Future.successful(Left(ErrorResponse(404, e.getMessage)))
     }
+  }
+
+  private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
+
+    val isEmailInDb = EmailAlreadyInDbUseCase(repository).isEmailInDb(input.email)
+
+    isEmailInDb.flatMap { isInDb =>
+
+      if (isInDb.nonEmpty) Future.successful(Left(ErrorResponse(400, s"This email is already being used with the id: ${isInDb.get.id}")))
+      else serverLogicIfEmailNotInDb(input)
+    }
+
   }
 
   private val serverLogic: Either[ErrorResponse, String] => ServiceRequest => Future[Either[ErrorResponse, ServiceResponse]] = { check => in =>

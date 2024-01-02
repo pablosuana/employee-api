@@ -60,6 +60,11 @@ class TestEmployeeRepository extends EmployeeRepository[DbResponseExample, Emplo
     Seq(dbResponseExample, dbResponseExample2)
   )
 
+  def isEmailInDb(email: String): Future[Option[DbResponseExample]] =
+    Future.successful(
+      Some(dbResponseExample)
+    )
+
   def getEmployeeById(id: UUID): Future[Option[DbResponseExample]] =
     Future.successful(
       Some(dbResponseExample)
