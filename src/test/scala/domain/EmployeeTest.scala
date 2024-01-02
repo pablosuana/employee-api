@@ -18,7 +18,7 @@ class EmployeeTest extends AnyFunSuite with Matchers {
       "id"          -> "java.util.UUID",
       "email"       -> "String",
       "fullName"    -> "String",
-      "dateOfBirth" -> "java.time.LocalDate",
+      "dateOfBirth" -> "String",
       "hobbies"     -> "Seq[String]"
     )
     val classType = typeOf[Employee]
@@ -45,7 +45,7 @@ class EmployeeTest extends AnyFunSuite with Matchers {
     employee should not be null
     employee.id shouldBe UUID.fromString("11111111-1111-1111-1111-111111111111")
     employee.email shouldBe "email@example.com"
-    employee.dateOfBirth shouldBe LocalDate.parse("1900-01-31", DateTimeFormatter.ISO_LOCAL_DATE)
+    employee.dateOfBirth shouldBe LocalDate.parse("1900-01-31", DateTimeFormatter.ISO_LOCAL_DATE).toString
     employee.hobbies shouldBe Seq("hobbies")
   }
 
@@ -54,7 +54,6 @@ class EmployeeTest extends AnyFunSuite with Matchers {
     val expectedErrorMessage = "requirement failed: Date of birth is accepted only in YYYY-MM-DD format"
     val actualException = intercept[IllegalArgumentException] {
       Employee(
-        UUID.fromString("11111111-1111-1111-1111-111111111111"),
         "email@example.com",
         "fullName",
         "31-01-1900",
@@ -70,7 +69,6 @@ class EmployeeTest extends AnyFunSuite with Matchers {
     val expectedErrorMessage = "requirement failed: Email has to be compliant with regex: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     val actualException = intercept[IllegalArgumentException] {
       Employee(
-        UUID.fromString("11111111-1111-1111-1111-111111111111"),
         "email-example.com",
         "fullName",
         "1900-01-31",

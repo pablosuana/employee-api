@@ -16,7 +16,7 @@ class GetRecordTest extends AnyFunSuite with Matchers with ScalaFutures{
     val getEmployee: Future[Option[DbResponseExample]] = GetEmployeeUseCase(repository).getEmployee("11111111-1111-1111-1111-111111111111")
 
     whenReady(getEmployee) { f =>
-      f shouldBe true
+      f shouldBe Some(DbResponseExample("11111111-1111-1111-1111-111111111111", "email1@email.com", "2023-12-31 00:00:00", "2023-12-31 00:00:00"))
     }
   }
 }
