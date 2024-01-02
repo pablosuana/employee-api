@@ -26,5 +26,6 @@ object HttpApplication extends App {
 
   logger.info("Starting application")
 
+
   Http().newServerAt("localhost", 8080).bindFlow(serviceInterface)
 }

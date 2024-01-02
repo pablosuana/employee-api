@@ -1,0 +1,369 @@
+openapi: 3.0.3
+info:
+  title: Employee-API
+  version: 1.0.0
+  description: API intended to be used for managing an employee DB
+tags:
+  - name: Employe-API
+    description: service endpoints
+servers:
+  - url: localhost:8080
+paths:
+  /create-employee:
+    post:
+      description: Endpoint used to create a new employee in the DB using POST
+      operationId: create-endpoint
+      requestBody:
+        description: Create Record Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+            example:
+              date_of_birth: '2000-10-10'
+              email: email5@emial.com
+              full_name: fullName
+              hobbies: []
+        required: true
+      responses:
+        '200':
+          description: Create Record Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              example:
+                email: email5@emial.com
+                id: 72a45570-904c-4dec-a4d7-7add5a31a755
+                status: completed
+                updated_at: '2024-01-02 05:38:04.66'
+        '400':
+          description: 'Invalid value for: body'
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Create Record Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: 'This email is already being used with the id: 5547bfa9-188c-4b96-b38a-f2b5d53361bd'
+      security:
+        - httpAuth: []
+  /update-employee:
+    put:
+      description: Endpoint used to update info about an employee in the DB using
+        POST
+      operationId: update-endpoint
+      requestBody:
+        description: Update Record Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest1'
+            example:
+              date_of_birth: '2000-10-10'
+              email: email6@emial.com
+              full_name: fullName4
+              hobbies: []
+              id: 72a45570-904c-4dec-a4d7-7add5a31a755
+        required: true
+      responses:
+        '200':
+          description: Update Record Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse1'
+              example:
+                email: email6@emial.com
+                id: 72a45570-904c-4dec-a4d7-7add5a31a755
+                updated_at: '2024-01-02 05:38:22.905'
+        '400':
+          description: 'Invalid value for: body'
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Update Record Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Employee was not updated
+      security:
+        - httpAuth: []
+  /get-employee:
+    get:
+      description: Endpoint used to get info about an employee in the DB using POST
+      operationId: get-endpoint
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Get Record Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse2'
+        '400':
+          description: 'Invalid value for: query parameter id'
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Get Record Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /get-all-employees:
+    get:
+      description: Endpoint used to get info about all employees in the DB using POST
+      operationId: get-all-endpoint
+      responses:
+        '200':
+          description: Get Record Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse3'
+        default:
+          description: Get Record Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /delete-employee:
+    put:
+      description: Endpoint used to delete an employee in the DB using PUT
+      operationId: delete-employee
+      requestBody:
+        description: Delete Record Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest2'
+            example:
+              email: email@emial.com
+        required: true
+      responses:
+        '200':
+          description: Delete Record Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse4'
+              example:
+                status: deleted
+        '400':
+          description: 'Invalid value for: body'
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: Delete Record Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - httpAuth: []
+components:
+  schemas:
+    EmployeeData:
+      required:
+        - result
+        - metadata
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/Result1'
+        metadata:
+          $ref: '#/components/schemas/Metadata1'
+    ErrorResponse:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    Metadata:
+      required:
+        - updated_at
+      type: object
+      properties:
+        updated_at:
+          type: string
+    Metadata1:
+      required:
+        - updated_at
+      type: object
+      properties:
+        updated_at:
+          type: string
+    Result:
+      required:
+        - id
+        - email
+        - full_name
+        - date_of_birth
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+    Result1:
+      required:
+        - id
+        - email
+        - full_name
+        - date_of_birth
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+    ServiceRequest:
+      required:
+        - email
+        - full_name
+        - date_of_birth
+      type: object
+      properties:
+        email:
+          type: string
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+    ServiceRequest1:
+      required:
+        - id
+        - email
+        - full_name
+        - date_of_birth
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+    ServiceRequest2:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+    ServiceResponse:
+      required:
+        - id
+        - email
+        - status
+        - updated_at
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        status:
+          type: string
+        updated_at:
+          type: string
+    ServiceResponse1:
+      required:
+        - id
+        - email
+        - updated_at
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        updated_at:
+          type: string
+    ServiceResponse2:
+      required:
+        - result
+        - metadata
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/Result'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ServiceResponse3:
+      type: object
+      properties:
+        employees:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeData'
+    ServiceResponse4:
+      required:
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+  securitySchemes:
+    httpAuth:
+      type: http
+      scheme: basic
