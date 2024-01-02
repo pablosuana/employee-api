@@ -5,6 +5,7 @@ import sttp.apispec.openapi.circe.yaml.RichOpenAPI
 import sttp.apispec.openapi.{Info, OpenAPI, Server}
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 
+// To execute it, write object ApiDocsGenerator extends App and run it manually
 object ApiDocsGenerator {
 
   val info = Info(
