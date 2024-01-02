@@ -1,3 +1,7 @@
+import com.typesafe.sbt.packager.docker.*
+
+enablePlugins(JavaAppPackaging)
+
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.12"
@@ -39,7 +43,6 @@ val testDeps = Seq(
   "com.typesafe"   % "config"     % "1.4.2"
 ).map(_ % Test)
 
-
 lazy val root = (project in file("."))
   .settings(
     name := "employee-api",
@@ -48,3 +51,14 @@ lazy val root = (project in file("."))
   .settings(
     libraryDependencies ++= (testDeps ++ serviceDeps ++ logsDeps)
   )
+  .settings(
+    dockerCommands ++= Seq(
+      Cmd("USER", "root"),
+      Cmd("RUN", "dir"),
+      Cmd("COPY", "/opt/docker/schema.sql", "/tmp/schema.sql"),
+      Cmd("COPY", "/opt/docker/data.sql", "/tmp/data.sql")
+    )
+  )
+  .settings(Universal / mappings := (Universal / mappings).value :+ (file(s"${baseDirectory.value}/src/main/resources/schema.sql") -> "schema.sql") :+ (file(s"${baseDirectory.value}/src/main/resources/data.sql") -> "data.sql"))
+
+  .enablePlugins(DockerPlugin, JavaServerAppPackaging)
