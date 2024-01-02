@@ -49,7 +49,6 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
       val timestamp = new Timestamp(new Date().getTime)
       val updateStatus = UpdateEmployeeUseCase(repository).updateEmployee(
         Employee(
-          id = input.id,
           email = input.email,
           fullName = input.full_name.getOrElse(""),
           dateOfBirth = input.date_of_birth.getOrElse(""),

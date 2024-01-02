@@ -12,11 +12,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object HttpApplication extends App {
 
-  private val logger           = LoggerFactory.getLogger(getClass)
   protected val config: Config = ConfigFactory.load("application.conf")
   implicit val as: ActorSystem = ActorSystem()
-
-  val repository = new EmployeeRepositoryImplementation
+  private val logger           = LoggerFactory.getLogger(getClass)
+  val repository               = new EmployeeRepositoryImplementation
 
   val serviceInterface: Route =
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new CreateEmployeeEndpoint(repository).endpointToUse) ~

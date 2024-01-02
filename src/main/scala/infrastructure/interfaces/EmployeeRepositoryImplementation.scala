@@ -5,6 +5,7 @@ import com.domain.interfaces.EmployeeRepository
 import com.domain.interfaces.db.DbAsyncOperationsBase
 import infrastructure.db._
 import infrastructure.dto.db.{PostgresRequest, PostgresResponse}
+import org.slf4j.LoggerFactory
 
 import java.sql.Connection
 import java.util.UUID
@@ -16,6 +17,7 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
   type DbConnectionType = Connection
   type DbResponseType   = PostgresResponse
 
+  private val logger                                                                       = LoggerFactory.getLogger(getClass)
   val dbConnectionConfig: PostgresInMemoryConnectionConf                                   = PostgresInMemoryConnectionConf("application.conf")
   val dbConnectionProvider: PostgresConnectionProvider                                     = new PostgresConnectionProvider(dbConnectionConfig)
   val dbOperations: DbAsyncOperationsBase[DbConnectionType, QueryToDbType, DbResponseType] = new PostgresAsyncOperations(dbConnectionProvider)
@@ -34,8 +36,8 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
 
     creationStatus.map(f =>
       if (f)
-        println(s"Employee with email: ${employee.email} has been created!")
-      else println(s"Employee with email: ${employee.email} was not created!")
+        logger.info(s"Employee with email: ${employee.email} has been created!")
+      else logger.info(s"Employee with email: ${employee.email} was not created!")
     )
     creationStatus
   }
@@ -54,8 +56,8 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
 
     updateStatus.map(f =>
       if (f)
-        println(s"Employee with email: ${employee.email} has been updated!")
-      else println(s"Employee with email: ${employee.email} was not updated!")
+        logger.info(s"Employee with email: ${employee.email} has been updated!")
+      else logger.info(s"Employee with email: ${employee.email} was not updated!")
     )
     updateStatus
   }
@@ -83,18 +85,18 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
     val queryToGetRecord                               = GetOnePostgresQuery(Some(id), None, dbConnectionConfig.tableName)
     val resultFromQuery: Future[Seq[PostgresResponse]] = dbOperations.getRecordsFromDb(queryToGetRecord)
     resultFromQuery.map(_.headOption)
-    }
+  }
 
   def deleteEmployee(email: Option[String], id: Option[String]): Future[Boolean] = {
     val queryToDeleteEmail = DeletePostgresQuery(None, email, dbConnectionConfig.tableName)
     val deleteStatus       = dbOperations.updateRecordInDb(queryToDeleteEmail)
 
-    deleteStatus.onComplete(f => println(s"Employee with email: ${email} has been removed!"))
+    deleteStatus.onComplete(f => logger.info(s"Employee with email: ${email} has been removed!"))
 
     deleteStatus.map(f =>
       if (f)
-        println(s"Employee with email: $email has been deleted!")
-      else println(s"Employee with email: $email was not deleted!")
+        logger.info(s"Employee with email: $email has been deleted!")
+      else logger.info(s"Employee with email: $email was not deleted!")
     )
     deleteStatus
   }
