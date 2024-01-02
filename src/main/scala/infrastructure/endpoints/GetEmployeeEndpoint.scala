@@ -9,11 +9,9 @@ import infrastructure.dto.client.getEmployee.ServiceResponseJsonFormatter.servic
 import infrastructure.dto.client.getEmployee.{Metadata, Result, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
 import sttp.model.StatusCode
-import sttp.model.headers.WWWAuthenticateChallenge
 import sttp.tapir.generic.auto.schemaForCaseClass
 import sttp.tapir.json.spray.jsonBody
-import sttp.tapir.model.UsernamePassword
-import sttp.tapir.{Endpoint, auth, endpoint, query, statusCode}
+import sttp.tapir.{Endpoint, endpoint, query, statusCode}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,7 +22,7 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
 
   private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
 
-  val endpointDefinition: Endpoint[UsernamePassword, UUID, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[Unit, UUID, ErrorResponse, ServiceResponse, Any] =
     endpoint.get
       .in("get-employee")
       .in(query[UUID]("id"))
@@ -33,15 +31,7 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
       .out(statusCode(StatusCode.Ok).description("Successful response"))
       .description("Endpoint used to get info about an employee in the DB using POST")
       .name("get-endpoint")
-      .securityIn(auth.basic[UsernamePassword](WWWAuthenticateChallenge("basic")))
 
-  private val securityLogic: UsernamePassword => Future[Either[ErrorResponse, String]] = { credentials =>
-    if (credentials.password.contains("password")) {
-      Future.successful(Right(credentials.username))
-    } else {
-      Future.successful(Left(ErrorResponse(401, "Provided credentials are incorrect")))
-    }
-  }
 
   private def serverLogicCorrectCredentials(id: UUID)(implicit ec: ExecutionContext) = {
     try {
@@ -74,19 +64,14 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
     }
   }
 
-  private val serverLogic: Either[ErrorResponse, String] => UUID => Future[Either[ErrorResponse, ServiceResponse]] = { check => id =>
+  private val serverLogic: UUID => Future[Either[ErrorResponse, ServiceResponse]] = { id =>
     implicit val ec: ExecutionContext = repository.ec
 
-    check match {
-      case Right(_)    => serverLogicCorrectCredentials(id)
-      case Left(value) => Future.successful(Left(ErrorResponse(value.code, value.message)))
-    }
-
+    serverLogicCorrectCredentials(id)
   }
 
   val endpointToUse =
     endpointDefinition
-      .serverSecurityLogicSuccess(securityLogic)
       .serverLogic(serverLogic)
 
 }
