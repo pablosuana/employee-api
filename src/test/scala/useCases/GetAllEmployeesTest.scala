@@ -1,6 +1,7 @@
 package useCases
 
-import com.domain.useCases.GetAllEmployeesUseCase
+import com.employee.domain
+import com.employee.domain.useCases.GetAllEmployeesUseCase
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -13,7 +14,7 @@ class GetAllEmployeesTest extends AnyFunSuite with Matchers with ScalaFutures {
 
   test(s"GetAllEmployees class has the expected methods") {
 
-    val getAllEmployees: Future[Seq[DbResponseExample]] = GetAllEmployeesUseCase(repository).getAllEmployees
+    val getAllEmployees: Future[Seq[DbResponseExample]] = domain.useCases.GetAllEmployeesUseCase(repository).getAllEmployees
 
     whenReady(getAllEmployees) { f =>
       f shouldBe Seq(

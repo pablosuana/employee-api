@@ -1,9 +1,9 @@
 package infrastructure
 
-import com.domain.Entities.Employee
-import infrastructure.db._
-import infrastructure.dto.db.PostgresRequest
-import infrastructure.dto.db.PostgresResponseJsonFormat.postgresResponseJsonFormat
+import com.employee.domain.entities.Employee
+import com.employee.infrastructure.db._
+import com.employee.infrastructure.dto.db.PostgresRequest
+import com.employee.infrastructure.dto.db.PostgresResponseJsonFormat.postgresResponseJsonFormat
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuite

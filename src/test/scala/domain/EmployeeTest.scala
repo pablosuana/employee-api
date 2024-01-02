@@ -1,6 +1,6 @@
 package domain
 
-import com.domain.Entities.Employee
+import com.employee.domain.entities.Employee
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

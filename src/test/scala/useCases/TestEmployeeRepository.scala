@@ -1,8 +1,8 @@
 package useCases
 
-import com.domain.Entities.Employee
-import com.domain.interfaces.EmployeeRepository
-import com.domain.interfaces.db._
+import com.employee.domain.entities.Employee
+import com.employee.domain.interfaces.EmployeeRepository
+import com.employee.domain.interfaces.db.{DbAsyncOperationsBase, DbConfigBase, DbConnectionProvider, DbQuery, DbResponse, GetQuery}
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.global
@@ -74,5 +74,5 @@ class TestEmployeeRepository extends EmployeeRepository[DbResponseExample, Emplo
 
   def deleteEmployee(email: Option[String], id: Option[String]): Future[Boolean] = Future.successful(true)
 
-  def updateEmployee(employee: Employee, updatedAt: String): Future[Boolean] = Future.successful(true)
+  def updateEmployee(employee: Employee, idToUpdate: String, updatedAt: String): Future[Boolean] = Future.successful(true)
 }
