@@ -26,7 +26,7 @@ object Employee {
 
   def apply(email: String, fullName: String, dateOfBirth: String, hobbies: Seq[String], uuidSeed: Option[String] = None): Employee = {
 
-    val formattedDob = Try(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_LOCAL_DATE)).toOption
+    val formattedDob: Option[LocalDate] = Try(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_LOCAL_DATE)).toOption
     val emailRegex   = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     val pattern      = emailRegex.r
 

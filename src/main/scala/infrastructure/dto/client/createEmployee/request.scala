@@ -2,8 +2,6 @@ package infrastructure.dto.client.createEmployee
 
 import spray.json.RootJsonFormat
 
-import java.util.UUID
-
 case class ServiceRequest(
   email: String,
   full_name: String,

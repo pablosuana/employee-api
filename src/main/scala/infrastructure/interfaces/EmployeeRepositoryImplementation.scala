@@ -42,9 +42,9 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
     creationStatus
   }
 
-  def updateEmployee(employee: Employee, updatedAt: String): Future[Boolean] = {
+  def updateEmployee(employee: Employee, idToUpdate: String, updatedAt: String): Future[Boolean] = {
     val postgresRequest = PostgresRequest(
-      id = employee.id.toString,
+      id = idToUpdate,
       full_name = employee.fullName,
       email = employee.email,
       date_of_birth = employee.dateOfBirth,

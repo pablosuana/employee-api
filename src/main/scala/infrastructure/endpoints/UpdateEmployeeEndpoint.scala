@@ -43,22 +43,25 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
       Future.successful(Left(ErrorResponse(401, "Provided credentials are incorrect")))
     }
   }
-
-  private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
+ // TODO this is not right, double check it
+  private def serverLogicCorrectCredentials(input: ServiceRequest, idToUpdate: String)(implicit ec: ExecutionContext) = {
     try {
       val timestamp = new Timestamp(new Date().getTime)
       val updateStatus = UpdateEmployeeUseCase(repository).updateEmployee(
         Employee(
           email = input.email,
-          fullName = input.full_name.getOrElse(""),
-          dateOfBirth = input.date_of_birth.getOrElse(""),
+          fullName = input.full_name,
+          dateOfBirth = input.date_of_birth,
           hobbies = input.hobbies
         ),
+        idToUpdate,
         timestamp.toString
       )
       updateStatus.flatMap { f =>
-        val status = if (f) "completed" else "failed"
-        Future.successful(Right(ServiceResponse(input.id, input.email, status, timestamp.toString)))
+        if (f)
+          Future.successful(Right(ServiceResponse(input.id, input.email, timestamp.toString)))
+        else
+          Future.successful(Left(ErrorResponse(400, "Employee was not updated")))
       }
     } catch {
       case e: Exception => Future.successful(Left(ErrorResponse(404, e.getMessage)))
@@ -69,7 +72,7 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     implicit val ec: ExecutionContext = repository.ec
 
     check match {
-      case Right(_)    => serverLogicCorrectCredentials(in)
+      case Right(_)    => serverLogicCorrectCredentials(in, in.id.toString)
       case Left(value) => Future.successful(Left(ErrorResponse(value.code, value.message)))
     }
 

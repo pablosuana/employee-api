@@ -27,5 +27,5 @@ trait EmployeeRepository[DbResponseType <: DbResponse, EmployeeType <: EmployeeB
 
   def deleteEmployee(email: Option[String], id: Option[String]): Future[Boolean]
 
-  def updateEmployee(employee: EmployeeType, updatedAt: String): Future[Boolean]
+  def updateEmployee(employee: EmployeeType, idToUpdate: String, updatedAt: String): Future[Boolean]
 }

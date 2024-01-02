@@ -6,7 +6,7 @@ import com.domain.interfaces.EmployeeRepository
 import scala.concurrent.Future
 
 case class UpdateEmployeeUseCase[EmployeeType <: EmployeeBase](employeeRepository: EmployeeRepository[_, EmployeeType]) {
-  def updateEmployee(employee: EmployeeType, updatedAt: String): Future[Boolean] = {
-    employeeRepository.updateEmployee(employee, updatedAt)
+  def updateEmployee(employee: EmployeeType, idToUpdate: String, updatedAt: String): Future[Boolean] = {
+    employeeRepository.updateEmployee(employee, idToUpdate, updatedAt)
   }
 }

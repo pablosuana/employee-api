@@ -6,5 +6,5 @@ CREATE TABLE if not exists "test_table" (
     "hobbies" varchar(600),
     "created_at" timestamp NOT NULL DEFAULT now(),
     "updated_at" timestamp NOT NULL DEFAULT now(),
-    PRIMARY KEY ("email", "created_at")
+    PRIMARY KEY ("id", "created_at")
     );

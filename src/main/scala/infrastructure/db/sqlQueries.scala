@@ -21,7 +21,7 @@ case class GetAllPostgresQuery(tableName: String) extends GetQuery[String] {
 case class CreatePostgresQuery(postgresRequest: PostgresRequest, tableName: String) extends CreateQuery[String] {
 
   override def queryMapper: String =
-      s"""
+    s"""
          |INSERT INTO $tableName (id, full_name, email, date_of_birth, hobbies, created_at, updated_at)
          |VALUES ('${postgresRequest.id}', '${postgresRequest.full_name}', '${postgresRequest.email}', '${postgresRequest.date_of_birth}', '${postgresRequest.hobbies}', '${postgresRequest.timestamp}', '${postgresRequest.timestamp}');
          |""".stripMargin
@@ -39,9 +39,9 @@ case class UpdatePostgresQuery(postgresRequest: PostgresRequest, tableName: Stri
 
   override def queryMapper: String =
       s"""UPDATE $tableName
-         |SET id='${postgresRequest.id}', full_name='${postgresRequest.full_name}',
+         |SET full_name='${postgresRequest.full_name}',
          |email='${postgresRequest.email}', date_of_birth='${postgresRequest.date_of_birth}',
          | hobbies='${postgresRequest.hobbies}', updated_at='${postgresRequest.timestamp}'
-         | WHERE email = '${postgresRequest.email}';
+         | WHERE id = '${postgresRequest.id}';
          """.stripMargin
 }
