@@ -9,16 +9,20 @@ import infrastructure.dto.client.deleteEmployee.ServiceRequestJsonFormatter.serv
 import infrastructure.dto.client.deleteEmployee.ServiceResponseJsonFormatter.serviceResponseDeleteEmployeeJF
 import infrastructure.dto.client.deleteEmployee.{ServiceRequest, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
+import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
 import sttp.model.headers.WWWAuthenticateChallenge
 import sttp.tapir.generic.auto.schemaForCaseClass
 import sttp.tapir.json.spray.jsonBody
 import sttp.tapir.model.UsernamePassword
-import sttp.tapir.{auth, endpoint, statusCode, Endpoint}
+import sttp.tapir.{Endpoint, auth, endpoint, statusCode}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
+  private val logger = LoggerFactory.getLogger(getClass)
+  logger.info(s"Initialising DeleteEmployeeEndpoint endpoint")
+
   private def jsonBodyRequest = jsonBody[ServiceRequest].description("Delete Record Request").example(Utils.readJsonExample("examples/deleteEmployeeSuccessRequest.json").convertTo[ServiceRequest])
   private def jsonBodyResponse = jsonBody[ServiceResponse].description("Delete Record Response").example(Utils.readJsonExample("examples/deleteEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
   private def jsonBodyError = jsonBody[ErrorResponse].description("Delete Record Error")

@@ -24,6 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
   private val logger = LoggerFactory.getLogger(getClass)
+  logger.info(s"Initialising CreateEmployee endpoint")
 
   import infrastructure.dto.client.createEmployee.ServiceRequestJsonFormatter.serviceRequestJF
 

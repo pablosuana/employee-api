@@ -39,9 +39,11 @@ val testDeps = Seq(
   "com.typesafe"   % "config"     % "1.4.2"
 ).map(_ % Test)
 
+
 lazy val root = (project in file("."))
   .settings(
-    name := "employee-api"
+    name := "employee-api",
+    fork := false
   )
   .settings(
     libraryDependencies ++= (testDeps ++ serviceDeps ++ logsDeps)

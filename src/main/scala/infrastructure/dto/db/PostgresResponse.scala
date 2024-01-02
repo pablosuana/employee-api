@@ -1,7 +1,8 @@
 package infrastructure.dto.db
 
 import com.domain.interfaces.db.DbResponse
-import spray.json.DefaultJsonProtocol.{jsonFormat7, StringJsonFormat}
+import spray.json.DefaultJsonProtocol.{StringJsonFormat, jsonFormat7}
+import spray.json.RootJsonFormat
 
 case class PostgresResponse(
   id: String,
@@ -15,5 +16,5 @@ case class PostgresResponse(
 
 object PostgresResponseJsonFormat {
 
-  implicit val postgresResponseJsonFormat = jsonFormat7(PostgresResponse)
+  implicit val postgresResponseJsonFormat: RootJsonFormat[PostgresResponse] = jsonFormat7(PostgresResponse)
 }

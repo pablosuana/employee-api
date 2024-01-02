@@ -8,6 +8,7 @@ import infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
 import infrastructure.dto.client.getAllEmployees.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
 import infrastructure.dto.client.getAllEmployees.{EmployeeData, Metadata, Result, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
+import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
 import sttp.tapir.generic.auto.schemaForCaseClass
 import sttp.tapir.json.spray.jsonBody
@@ -17,6 +18,8 @@ import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
+  private val logger = LoggerFactory.getLogger(getClass)
+  logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
   private def jsonBodyResponse = jsonBody[ServiceResponse].description("Get Record Response") //.example()
 

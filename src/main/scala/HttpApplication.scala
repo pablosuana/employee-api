@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import sttp.tapir.server.akkahttp.AkkaHttpServerInterpreter
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 object HttpApplication extends App {
 
@@ -19,13 +20,24 @@ object HttpApplication extends App {
 
   val serviceInterface: Route =
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new CreateEmployeeEndpoint(repository).endpointToUse) ~
-    AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new UpdateEmployeeEndpoint(repository).endpointToUse) ~
+    AkkaHttpServerInterpreter()(as.dispatcher).toRoute(UpdateEmployeeEndpoint(repository).endpointToUse) ~
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new GetEmployeeEndpoint(repository).endpointToUse) ~
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new GetAllEmployeesEndpoint(repository).endpointToUse) ~
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new DeleteEmployeeEndpoint(repository).endpointToUse)
 
   logger.info("Starting application")
 
+  val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bindFlow(serviceInterface)
+  logger.info("Finish application")
+  bindingFuture.onComplete {
+    case Success(binding) =>
+      logger.info(s"Success binding")
+      val address = binding.localAddress
+      logger.info(s"Server online at http://${address.getHostString}:${address.getPort}/")
+    case Failure(exception) =>
+      logger.error("Server binding failed", exception)
+      sys.exit()
+  }
 
-  Http().newServerAt("localhost", 8080).bindFlow(serviceInterface)
 }
+

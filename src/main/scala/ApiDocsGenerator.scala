@@ -5,7 +5,7 @@ import sttp.apispec.openapi.circe.yaml.RichOpenAPI
 import sttp.apispec.openapi.{Info, OpenAPI, Server}
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 
-object ApiDocsGenerator extends App {
+object ApiDocsGenerator {
 
   val info = Info(
     title = "Employee-API",

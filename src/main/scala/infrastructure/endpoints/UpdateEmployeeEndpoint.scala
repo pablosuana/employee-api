@@ -9,6 +9,7 @@ import infrastructure.dto.client.updateEmployee.ServiceRequestJsonFormatter.serv
 import infrastructure.dto.client.updateEmployee.ServiceResponseJsonFormatter.serviceResponseJF
 import infrastructure.dto.client.updateEmployee.{ServiceRequest, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
+import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
 import sttp.model.headers.WWWAuthenticateChallenge
 import sttp.tapir.generic.auto.schemaForCaseClass
@@ -20,7 +21,10 @@ import java.sql.Timestamp
 import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
+case class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
+  private val logger = LoggerFactory.getLogger(getClass)
+  logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
+
   private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Update Record Request").example(Utils.readJsonExample("examples/updateEmployeeRequest.json").convertTo[ServiceRequest])
   private def jsonBodyResponse = jsonBody[ServiceResponse].description("Update Record Response").example(Utils.readJsonExample("examples/updateEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
   private def jsonBodyError    = jsonBody[ErrorResponse].description("Update Record Error").example(Utils.readJsonExample("examples/updateEmployeeErrorResponse.json").convertTo[ErrorResponse])
