@@ -62,22 +62,12 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
     updateStatus
   }
 
-  override def getAllEmployees: Future[Seq[Employee]] = {
+  override def getAllEmployees: Future[Seq[PostgresResponse]] = {
 
     val queryToGetRecord = GetAllPostgresQuery(dbConnectionConfig.tableName)
-    val resultFromQuery  = dbOperations.getRecordsFromDb(queryToGetRecord)
+    logger.info(s"Retrieved all employees from DB!")
+    dbOperations.getRecordsFromDb(queryToGetRecord)
 
-    resultFromQuery.map { r =>
-      r.map { x =>
-        Employee(
-          id = UUID.fromString(x.id),
-          email = x.email,
-          fullName = x.full_name,
-          dateOfBirth = x.date_of_birth,
-          hobbies = x.hobbies.split(",")
-        )
-      }
-    }
   }
 
   def getEmployeeById(id: UUID): Future[Option[PostgresResponse]] = {

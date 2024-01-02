@@ -5,16 +5,26 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.util.Try
 
-case class Employee(
-  id: UUID,
-  email: String,
-  fullName: String,
-  dateOfBirth: String,
-  hobbies: Seq[String]
+class Employee private (
+  val id: UUID,
+  val email: String,
+  val fullName: String,
+  val dateOfBirth: String,
+  val hobbies: Seq[String]
 ) extends EmployeeBase
 
 object Employee {
-  def apply(email: String, fullName: String, dateOfBirth: String, hobbies: Seq[String]): Employee = {
+
+  private def generateUUID(seed: Option[String]): UUID = {
+    seed match {
+      case Some(value) =>
+        val seedUUID = UUID.nameUUIDFromBytes(value.getBytes)
+        UUID.fromString(seedUUID.toString)
+      case None => UUID.randomUUID()
+    }
+  }
+
+  def apply(email: String, fullName: String, dateOfBirth: String, hobbies: Seq[String], uuidSeed: Option[String] = None): Employee = {
 
     val formattedDob = Try(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_LOCAL_DATE)).toOption
     val emailRegex   = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
@@ -23,6 +33,6 @@ object Employee {
     require(formattedDob.nonEmpty, "Date of birth is accepted only in YYYY-MM-DD format")
     require(pattern.findFirstIn(email).isDefined, "Email has to be compliant with regex: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
 
-    new Employee(UUID.randomUUID(), email, fullName, dateOfBirth, hobbies)
+    new Employee(generateUUID(uuidSeed), email, fullName, dateOfBirth, hobbies)
   }
 }

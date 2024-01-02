@@ -19,8 +19,8 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
 
   implicit val ec = global
 
-  val employee1        = Employee(UUID.fromString("11111111-1111-1111-1111-111111111111"), "email1@email.com", "fullname1", "1990-01-01", Seq.empty)
-  val employee2        = Employee(UUID.fromString("22222222-2222-2222-2222-222222222222"), "email2@email.com", "fullname2", "2000-10-12", Seq.empty)
+  val employee1        = Employee("email1@email.com", "fullname1", "1990-01-01", Seq.empty, Some("seed1"))
+  val employee2        = Employee("email2@email.com", "fullname2", "2000-10-12", Seq.empty, Some("seed2"))
   val dbConnection     = new PostgresConnectionProvider(PostgresInMemoryConnectionConf("application-test.conf"))
   val tableName        = dbConnection.tableName
   val postgresInstance = new PostgresAsyncOperations(dbConnection)
@@ -71,13 +71,13 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
       }
 
       resultList.length shouldBe 2
-      resultList.sortWith(_ < _) shouldBe Seq("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222")
+      resultList.sortWith(_ < _) shouldBe Seq("9289941f-8a42-30fd-ac05-f11fab6bc867", "f2aee81c-67e9-36a3-a0fe-adc451f05d9f")
 
     }
   }
 
   test("We can update records to a chosen database") {
-    val newemployee2 = Employee(UUID.fromString("33333333-3333-3333-3333-333333333333"), "email2@email.com", "fullname2", "2000-10-12", Seq.empty)
+    val newemployee2 = Employee("email2@email.com", "fullname2", "2000-10-12", Seq.empty, Some("seed2"))
 
     val specificDateTime = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
     val specificTimeInMillis = specificDateTime.atZone(ZoneId.systemDefault()).toInstant.toEpochMilli
@@ -111,20 +111,20 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
       }
 
       resultList.length shouldBe 2
-      resultList.sortWith(_ < _) shouldBe Seq("11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333")
+      resultList.sortWith(_ < _) shouldBe Seq("9289941f-8a42-30fd-ac05-f11fab6bc867", "f2aee81c-67e9-36a3-a0fe-adc451f05d9f")
 
     }
   }
 
   test("We can get a record by id") {
 
-    val queryToGetRecord = GetOnePostgresQuery(Some(UUID.fromString("11111111-1111-1111-1111-111111111111")), None, tableName)
+    val queryToGetRecord = GetOnePostgresQuery(Some(UUID.fromString("9289941f-8a42-30fd-ac05-f11fab6bc867")), None, tableName)
     val fut2             = postgresInstance.getRecordsFromDb(queryToGetRecord)
 
     whenReady(fut2) { r =>
       val jsonResult = r.map(_.toJson.sortedPrint)
       jsonResult shouldBe Seq(
-        """{"updated_at": "2023-12-31 00:00:00", "created_at": "2023-12-31 00:00:00","date_of_birth":"1990-01-01","email":"email1@email.com","full_name":"fullname1","hobbies":"","id":"11111111-1111-1111-1111-111111111111"}""".stripMargin.parseJson.sortedPrint
+        """{"updated_at": "2023-12-31 00:00:00", "created_at": "2023-12-31 00:00:00","date_of_birth":"1990-01-01","email":"email1@email.com","full_name":"fullname1","hobbies":"","id":"9289941f-8a42-30fd-ac05-f11fab6bc867"}""".stripMargin.parseJson.sortedPrint
       )
     }
   }
@@ -137,7 +137,7 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
     whenReady(fut2) { r =>
       val jsonResult = r.map(_.toJson.sortedPrint)
       jsonResult shouldBe Seq(
-        """{"updated_at": "2023-12-31 00:00:00", "created_at": "2023-12-31 00:00:00","date_of_birth":"1990-01-01","email":"email1@email.com","full_name":"fullname1","hobbies":"","id":"11111111-1111-1111-1111-111111111111"}""".parseJson.sortedPrint
+        """{"updated_at": "2023-12-31 00:00:00", "created_at": "2023-12-31 00:00:00","date_of_birth":"1990-01-01","email":"email1@email.com","full_name":"fullname1","hobbies":"","id":"9289941f-8a42-30fd-ac05-f11fab6bc867"}""".parseJson.sortedPrint
       )
     }
   }
@@ -157,7 +157,7 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
           |  "email": "email1@email.com",
           |  "full_name": "fullname1",
           |  "hobbies": "",
-          |  "id": "11111111-1111-1111-1111-111111111111"
+          |  "id": "9289941f-8a42-30fd-ac05-f11fab6bc867"
           |  }""".stripMargin.parseJson.sortedPrint,
         """{
           |  "updated_at": "2024-01-01 00:00:00",
@@ -166,7 +166,7 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
           |  "email": "email2@email.com",
           |  "full_name": "fullname2",
           |  "hobbies": "",
-          |  "id": "33333333-3333-3333-3333-333333333333"
+          |  "id": "f2aee81c-67e9-36a3-a0fe-adc451f05d9f"
           |}""".stripMargin.parseJson.sortedPrint
       )
     }
@@ -174,7 +174,7 @@ class TestDbAsyncOperationsBase extends AnyFunSuite with Matchers with BeforeAnd
 
   test("We can remove records from a chosen database") {
 
-    val queryToDeleteId    = DeletePostgresQuery(Some(UUID.fromString("33333333-3333-3333-3333-333333333333")), None, tableName)
+    val queryToDeleteId    = DeletePostgresQuery(Some(UUID.fromString("f2aee81c-67e9-36a3-a0fe-adc451f05d9f")), None, tableName)
     val queryToDeleteEmail = DeletePostgresQuery(None, Some("email1@email.com"), tableName)
     val fut1               = postgresInstance.updateRecordInDb(queryToDeleteId)
     val fut2               = postgresInstance.updateRecordInDb(queryToDeleteEmail)

@@ -14,7 +14,7 @@ class CreateRecordTest extends AnyFunSuite with Matchers with ScalaFutures{
   val repository = new TestEmployeeRepository
 
   test(s"CreateRecord class has the expected methods") {
-    val employee = Employee(UUID.fromString("11111111-1111-1111-1111-111111111111"), "email1@email.com", "fullname1", "1990-01-01", Seq.empty)
+    val employee = Employee("email1@email.com", "fullname1", "1990-01-01", Seq.empty)
 
     val createEmployee: Future[Boolean] = CreateEmployeeUseCase(repository).createEmployee(employee, "2023-12-31 00:00:00")
 

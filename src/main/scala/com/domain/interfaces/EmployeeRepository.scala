@@ -17,7 +17,7 @@ trait EmployeeRepository[DbResponseType <: DbResponse, EmployeeType <: EmployeeB
   val dbConnectionProvider: DbConnectionProvider[DbConnectionType]
   val dbOperations: DbAsyncOperationsBase[DbConnectionType, QueryToDbType, DbResponseType]
 
-  def getAllEmployees: Future[Seq[EmployeeType]]
+  def getAllEmployees: Future[Seq[DbResponseType]]
 
   def getEmployeeById(id: UUID): Future[Option[DbResponseType]]
 

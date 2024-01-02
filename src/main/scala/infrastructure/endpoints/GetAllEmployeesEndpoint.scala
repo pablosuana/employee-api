@@ -2,37 +2,36 @@ package infrastructure.endpoints
 
 import com.domain.Entities.Employee
 import com.domain.interfaces.EmployeeRepository
-import com.domain.useCases.GetEmployeeUseCase
+import com.domain.useCases.GetAllEmployeesUseCase
 import infrastructure.dto.client.ErrorResponse
 import infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
-import infrastructure.dto.client.getEmployee.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
-import infrastructure.dto.client.getEmployee.{Metadata, Result, ServiceResponse}
+import infrastructure.dto.client.getAllEmployees.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
+import infrastructure.dto.client.getAllEmployees.{EmployeeData, Metadata, Result, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
 import sttp.model.StatusCode
 import sttp.model.headers.WWWAuthenticateChallenge
 import sttp.tapir.generic.auto.schemaForCaseClass
 import sttp.tapir.json.spray.jsonBody
 import sttp.tapir.model.UsernamePassword
-import sttp.tapir.{Endpoint, auth, endpoint, query, statusCode}
+import sttp.tapir.{Endpoint, auth, endpoint, statusCode}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
+class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
 
   private def jsonBodyResponse = jsonBody[ServiceResponse].description("Get Record Response") //.example()
 
   private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
 
-  val endpointDefinition: Endpoint[UsernamePassword, UUID, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[UsernamePassword, Unit, ErrorResponse, ServiceResponse, Any] =
     endpoint.get
-      .in("get-employee")
-      .in(query[UUID]("id"))
+      .in("get-all-employees")
       .errorOut(jsonBodyError)
       .out(jsonBodyResponse)
       .out(statusCode(StatusCode.Ok).description("Successful response"))
-      .description("Endpoint used to get info about an employee in the DB using POST")
-      .name("get-endpoint")
+      .description("Endpoint used to get info about all employees in the DB using POST")
+      .name("get-all-endpoint")
       .securityIn(auth.basic[UsernamePassword](WWWAuthenticateChallenge("basic")))
 
   private val securityLogic: UsernamePassword => Future[Either[ErrorResponse, String]] = { credentials =>
@@ -43,26 +42,30 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
     }
   }
 
-  private def serverLogicCorrectCredentials(id: UUID)(implicit ec: ExecutionContext) = {
+  private def serverLogicCorrectCredentials(implicit ec: ExecutionContext) = {
     try {
-      val restrievedResult: Future[Option[PostgresResponse]] =
-        GetEmployeeUseCase(repository).getEmployee(id.toString)
+      val retrievedResult: Future[Seq[PostgresResponse]] =
+        GetAllEmployeesUseCase(repository).getAllEmployees
 
-      restrievedResult.flatMap { employee =>
-        val employeeFound = if (employee.nonEmpty) true else false
+      retrievedResult.flatMap { employees =>
+        val employeeFound = if (employees.nonEmpty) true else false
         if (employeeFound) {
           Future.successful(
             Right(
               ServiceResponse(
-                result = Result(
-                  id = UUID.fromString(employee.get.id),
-                  email = employee.get.email,
-                  full_name = employee.get.full_name,
-                  date_of_birth = employee.get.date_of_birth,
-                  hobbies = employee.get.hobbies.split(",")
-                ),
-                metadata = Metadata(
-                  updated_at = employee.get.updated_at
+                employees = employees.map(employee =>
+                  EmployeeData(
+                    result = Result(
+                      id = UUID.fromString(employee.id),
+                      email = employee.email,
+                      full_name = employee.full_name,
+                      date_of_birth = employee.date_of_birth,
+                      hobbies = employee.hobbies.split(",")
+                    ),
+                    metadata = Metadata(
+                      updated_at = employee.updated_at
+                    )
+                  )
                 )
               )
             )
@@ -74,11 +77,11 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
     }
   }
 
-  private val serverLogic: Either[ErrorResponse, String] => UUID => Future[Either[ErrorResponse, ServiceResponse]] = { check => id =>
+  private val serverLogic: Either[ErrorResponse, String] => Unit => Future[Either[ErrorResponse, ServiceResponse]] = { check => id =>
     implicit val ec: ExecutionContext = repository.ec
 
     check match {
-      case Right(_)    => serverLogicCorrectCredentials(id)
+      case Right(_)    => serverLogicCorrectCredentials
       case Left(value) => Future.successful(Left(ErrorResponse(value.code, value.message)))
     }
 

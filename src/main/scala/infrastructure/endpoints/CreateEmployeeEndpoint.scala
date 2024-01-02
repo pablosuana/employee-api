@@ -52,18 +52,19 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
   private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
     try {
       val timestamp = new Timestamp(new Date().getTime)
+      val employee = Employee(
+        email = input.email,
+        fullName = input.full_name,
+        dateOfBirth = input.date_of_birth,
+        hobbies = input.hobbies
+      )
       val creationStatus = CreateEmployeeUseCase(repository).createEmployee(
-        Employee(
-          email = input.email,
-          fullName = input.full_name,
-          dateOfBirth = input.date_of_birth,
-          hobbies = input.hobbies
-        ),
+        employee,
         timestamp.toString
       )
       creationStatus.flatMap { f =>
         val status = if (f) "completed" else "failed"
-        Future.successful(Right(ServiceResponse(input.id, input.email, status, timestamp.toString)))
+        Future.successful(Right(ServiceResponse(employee.id, input.email, status, timestamp.toString)))
       }
     } catch {
       case e: Exception =>

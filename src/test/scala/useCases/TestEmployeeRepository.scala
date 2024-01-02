@@ -45,20 +45,19 @@ class TestEmployeeRepository extends EmployeeRepository[DbResponseExample, Emplo
     "2023-12-31 00:00:00"
   )
 
+  val dbResponseExample2: DbResponseExample = DbResponseExample(
+    "22211111-1111-1111-1111-111111111111",
+    "email2@email.com",
+    "2023-12-31 00:00:00",
+    "2023-12-31 00:00:00"
+  )
+
   val dbConnectionConfig: DbConfigBase                                                     = new DbConfigExample
   val dbConnectionProvider: DbConnectionProvider[DbConnectionType]                         = new DbConnectionProviderExample
   val dbOperations: DbAsyncOperationsBase[DbConnectionType, QueryToDbType, DbResponseType] = new DbAsyncOperationsExample
 
-  def getAllEmployees: Future[Seq[Employee]] = Future.successful(
-    Seq(
-      Employee(
-        UUID.fromString("11111111-1111-1111-1111-111111111111"),
-        "email1@email.com",
-        "fullname1",
-        "1990-01-01",
-        Seq.empty
-      )
-    )
+  def getAllEmployees: Future[Seq[DbResponseExample]] = Future.successful(
+    Seq(dbResponseExample, dbResponseExample2)
   )
 
   def getEmployeeById(id: UUID): Future[Option[DbResponseExample]] =
