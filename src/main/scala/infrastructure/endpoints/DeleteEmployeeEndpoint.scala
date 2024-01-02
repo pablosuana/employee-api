@@ -19,11 +19,9 @@ import sttp.tapir.{auth, endpoint, statusCode, Endpoint}
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
-  private def jsonBodyRequest = jsonBody[ServiceRequest].description("Delete Record Request") //.example()
-
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Delete Record Response") //.example()
-
-  private def jsonBodyError = jsonBody[ErrorResponse].description("Delete Record Error") //.example()
+  private def jsonBodyRequest = jsonBody[ServiceRequest].description("Delete Record Request").example(Utils.readJsonExample("examples/deleteEmployeeSuccessRequest.json").convertTo[ServiceRequest])
+  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Delete Record Response").example(Utils.readJsonExample("examples/deleteEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyError = jsonBody[ErrorResponse].description("Delete Record Error")
 
   val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
     endpoint.put

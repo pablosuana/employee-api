@@ -21,9 +21,9 @@ import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
-  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Update Record Request")   //.example()
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Update Record Response") //.example()
-  private def jsonBodyError    = jsonBody[ErrorResponse].description("Update Record Error")      //.example()
+  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Update Record Request").example(Utils.readJsonExample("examples/updateEmployeeRequest.json").convertTo[ServiceRequest])
+  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Update Record Response").example(Utils.readJsonExample("examples/updateEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyError    = jsonBody[ErrorResponse].description("Update Record Error").example(Utils.readJsonExample("examples/updateEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
   val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
     endpoint.put

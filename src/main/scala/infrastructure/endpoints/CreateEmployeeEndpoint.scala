@@ -5,7 +5,6 @@ import com.domain.interfaces.EmployeeRepository
 import com.domain.useCases.{CreateEmployeeUseCase, EmailAlreadyInDbUseCase}
 import infrastructure.dto.client.ErrorResponse
 import infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
-import infrastructure.dto.client.createEmployee.ServiceRequestJsonFormatter.serviceRequestJF
 import infrastructure.dto.client.createEmployee.ServiceResponseJsonFormatter.serviceResponseJF
 import infrastructure.dto.client.createEmployee.{ServiceRequest, ServiceResponse}
 import infrastructure.dto.db.PostgresResponse
@@ -26,9 +25,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Employee]) {
   private val logger = LoggerFactory.getLogger(getClass)
 
-  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Create Record Request")   //.example()
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Create Record Response") //.example()
-  private def jsonBodyError    = jsonBody[ErrorResponse].description("Create Record Error")      //.example()
+  import infrastructure.dto.client.createEmployee.ServiceRequestJsonFormatter.serviceRequestJF
+
+  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Create Record Request").example(Utils.readJsonExample("examples/createEmployeeRequest.json").convertTo[ServiceRequest])
+  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Create Record Response").example(Utils.readJsonExample("examples/createEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyError    = jsonBody[ErrorResponse].description("Create Record Error").example(Utils.readJsonExample("examples/createEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
   val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
     endpoint.post
