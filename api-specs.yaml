@@ -4,10 +4,10 @@ info:
   version: 1.0.0
   description: API intended to be used for managing an employee DB
 tags:
-  - name: Employe-API
-    description: service endpoints
+- name: Employe-API
+  description: service endpoints
 servers:
-  - url: localhost:8080
+- url: localhost:8080
 paths:
   /create-employee:
     post:
@@ -18,7 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequest'
+              $ref: '#/components/schemas/CreateEmployeeRequest'
             example:
               date_of_birth: '2000-10-10'
               email: email5@emial.com
@@ -31,7 +31,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceResponse'
+                $ref: '#/components/schemas/CreateEmployeeResponse'
               example:
                 email: email5@emial.com
                 id: 72a45570-904c-4dec-a4d7-7add5a31a755
@@ -53,7 +53,7 @@ paths:
                 code: 400
                 message: 'This email is already being used with the id: 5547bfa9-188c-4b96-b38a-f2b5d53361bd'
       security:
-        - httpAuth: []
+      - httpAuth: []
   /update-employee:
     put:
       description: Endpoint used to update info about an employee in the DB using
@@ -64,7 +64,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequest1'
+              $ref: '#/components/schemas/UpdateEmployeeRequest'
             example:
               date_of_birth: '2000-10-10'
               email: email6@emial.com
@@ -78,7 +78,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceResponse1'
+                $ref: '#/components/schemas/UpdateEmployeeResponse'
               example:
                 email: email6@emial.com
                 id: 72a45570-904c-4dec-a4d7-7add5a31a755
@@ -99,25 +99,35 @@ paths:
                 code: 400
                 message: Employee was not updated
       security:
-        - httpAuth: []
+      - httpAuth: []
   /get-employee:
     get:
       description: Endpoint used to get info about an employee in the DB using POST
       operationId: get-endpoint
       parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Get Record Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceResponse2'
+                $ref: '#/components/schemas/GetEmployeeResponse'
+              example:
+                metadata:
+                  updated_at: '2024-01-03 00:23:23.356'
+                result:
+                  date_of_birth: '2000-10-10'
+                  email: email6@emial.com
+                  full_name: fullName4
+                  hobbies:
+                  - ''
+                  id: 0ea919eb-ba3d-41e7-912e-aef890301610
         '400':
           description: 'Invalid value for: query parameter id'
           content:
@@ -130,6 +140,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: Employee not found
   /get-all-employees:
     get:
       description: Endpoint used to get info about all employees in the DB using POST
@@ -140,13 +153,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceResponse3'
+                $ref: '#/components/schemas/GetAllEmployeesResponse'
+              example:
+                employees:
+                - metadata:
+                    updated_at: '2024-01-03 00:36:32.378'
+                  result:
+                    date_of_birth: '2000-10-10'
+                    email: email5@emial.com
+                    full_name: fullName
+                    hobbies:
+                    - ''
+                    id: cb9b19fc-1563-4fe7-92a3-7d75a98877f4
+                - metadata:
+                    updated_at: '2024-01-03 00:36:41.477'
+                  result:
+                    date_of_birth: '2000-10-10'
+                    email: 123email5@emial.com
+                    full_name: fullName
+                    hobbies:
+                    - ''
+                    id: a8475223-6af9-479e-b81a-eec20fc8f0d1
         default:
           description: Get Record Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: Employee not found
   /delete-employee:
     put:
       description: Endpoint used to delete an employee in the DB using PUT
@@ -156,7 +192,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequest2'
+              $ref: '#/components/schemas/DeleteEmployeeRequest'
             example:
               email: email@emial.com
         required: true
@@ -166,7 +202,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceResponse4'
+                $ref: '#/components/schemas/DeleteEmployeeResponse'
               example:
                 status: deleted
         '400':
@@ -182,13 +218,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-        - httpAuth: []
+      - httpAuth: []
 components:
   schemas:
+    CreateEmployeeRequest:
+      required:
+      - email
+      - full_name
+      - date_of_birth
+      type: object
+      properties:
+        email:
+          type: string
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+    CreateEmployeeResponse:
+      required:
+      - id
+      - email
+      - status
+      - updated_at
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        status:
+          type: string
+        updated_at:
+          type: string
+    DeleteEmployeeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+    DeleteEmployeeResponse:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          type: string
     EmployeeData:
       required:
-        - result
-        - metadata
+      - result
+      - metadata
       type: object
       properties:
         result:
@@ -197,8 +282,8 @@ components:
           $ref: '#/components/schemas/Metadata1'
     ErrorResponse:
       required:
-        - code
-        - message
+      - code
+      - message
       type: object
       properties:
         code:
@@ -206,26 +291,43 @@ components:
           format: int32
         message:
           type: string
+    GetAllEmployeesResponse:
+      type: object
+      properties:
+        employees:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeData'
+    GetEmployeeResponse:
+      required:
+      - result
+      - metadata
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/Result'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
     Metadata:
       required:
-        - updated_at
+      - updated_at
       type: object
       properties:
         updated_at:
           type: string
     Metadata1:
       required:
-        - updated_at
+      - updated_at
       type: object
       properties:
         updated_at:
           type: string
     Result:
       required:
-        - id
-        - email
-        - full_name
-        - date_of_birth
+      - id
+      - email
+      - full_name
+      - date_of_birth
       type: object
       properties:
         id:
@@ -243,10 +345,10 @@ components:
             type: string
     Result1:
       required:
-        - id
-        - email
-        - full_name
-        - date_of_birth
+      - id
+      - email
+      - full_name
+      - date_of_birth
       type: object
       properties:
         id:
@@ -262,29 +364,12 @@ components:
           type: array
           items:
             type: string
-    ServiceRequest:
+    UpdateEmployeeRequest:
       required:
-        - email
-        - full_name
-        - date_of_birth
-      type: object
-      properties:
-        email:
-          type: string
-        full_name:
-          type: string
-        date_of_birth:
-          type: string
-        hobbies:
-          type: array
-          items:
-            type: string
-    ServiceRequest1:
-      required:
-        - id
-        - email
-        - full_name
-        - date_of_birth
+      - id
+      - email
+      - full_name
+      - date_of_birth
       type: object
       properties:
         id:
@@ -300,36 +385,11 @@ components:
           type: array
           items:
             type: string
-    ServiceRequest2:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        email:
-          type: string
-    ServiceResponse:
+    UpdateEmployeeResponse:
       required:
-        - id
-        - email
-        - status
-        - updated_at
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        email:
-          type: string
-        status:
-          type: string
-        updated_at:
-          type: string
-    ServiceResponse1:
-      required:
-        - id
-        - email
-        - updated_at
+      - id
+      - email
+      - updated_at
       type: object
       properties:
         id:
@@ -338,30 +398,6 @@ components:
         email:
           type: string
         updated_at:
-          type: string
-    ServiceResponse2:
-      required:
-        - result
-        - metadata
-      type: object
-      properties:
-        result:
-          $ref: '#/components/schemas/Result'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    ServiceResponse3:
-      type: object
-      properties:
-        employees:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmployeeData'
-    ServiceResponse4:
-      required:
-        - status
-      type: object
-      properties:
-        status:
           type: string
   securitySchemes:
     httpAuth:

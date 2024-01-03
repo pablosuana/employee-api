@@ -7,8 +7,10 @@ import sttp.apispec.openapi.circe.yaml.RichOpenAPI
 import sttp.apispec.openapi.{Info, OpenAPI, Server}
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 
+import java.nio.file.{Files, Paths, StandardOpenOption}
+
 // To execute it, write object ApiDocsGenerator extends App and run it manually
-object ApiDocsGenerator {
+object ApiDocsGenerator extends App {
 
   val info = Info(
     title = "Employee-API",
@@ -43,5 +45,6 @@ object ApiDocsGenerator {
 
   val yml: String = openApi.toYaml
 
-  println(yml)
+  Files.write(Paths.get("api-specs.yaml"), yml.getBytes, StandardOpenOption.CREATE)
+
 }

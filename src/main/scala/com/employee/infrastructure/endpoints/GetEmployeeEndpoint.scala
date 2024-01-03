@@ -5,8 +5,8 @@ import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.GetEmployeeUseCase
 import com.employee.infrastructure.dto.client.ErrorResponse
 import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
-import com.employee.infrastructure.dto.client.getEmployee.{Metadata, Result, GetEmployeeResponse}
-import com.employee.infrastructure.dto.client.getEmployee.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
+import com.employee.infrastructure.dto.client.getEmployee.ServiceResponseJsonFormatter.getEmployeeResponseJF
+import com.employee.infrastructure.dto.client.getEmployee.{GetEmployeeResponse, Metadata, Result}
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
@@ -21,9 +21,9 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
-  private def jsonBodyResponse = jsonBody[GetEmployeeResponse].description("Get Record Response") //.example()
+  private def jsonBodyResponse = jsonBody[GetEmployeeResponse].description("Get Record Response").example(Utils.readJsonExample("examples/getEmployeeSuccessResponse.json").convertTo[GetEmployeeResponse])
 
-  private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
+  private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error").example(Utils.readJsonExample("examples/getEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
   val endpointDefinition: Endpoint[Unit, UUID, ErrorResponse, GetEmployeeResponse, Any] =
     endpoint.get

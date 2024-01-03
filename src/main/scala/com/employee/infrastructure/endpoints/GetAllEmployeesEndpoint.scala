@@ -21,9 +21,9 @@ class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, E
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
-  private def jsonBodyResponse = jsonBody[GetAllEmployeesResponse].description("Get Record Response") //.example()
+  private def jsonBodyResponse = jsonBody[GetAllEmployeesResponse].description("Get Record Response").example(Utils.readJsonExample("examples/getAllEmployeeSuccessResponse.json").convertTo[GetAllEmployeesResponse])
 
-  private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
+  private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error").example(Utils.readJsonExample("examples/getAllEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
   val endpointDefinition: Endpoint[Unit, Unit, ErrorResponse, GetAllEmployeesResponse, Any] =
     endpoint.get
