@@ -50,7 +50,7 @@ class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
   private def serverLogicCorrectCredentials(input: DeleteEmployeeRequest)(implicit ec: ExecutionContext) = {
     try {
       val restrievedResult: Future[Boolean] = DeleteEmployeeUseCase(repository).deleteEmployee(
-        id = input.id.map(_.toString),
+        id = input.id,
         email = input.email
       )
       restrievedResult.flatMap { result =>

@@ -83,8 +83,8 @@ class EmployeeRepositoryImplementation(implicit override val ec: ExecutionContex
     resultFromQuery.map(_.headOption)
   }
 
-  def deleteEmployee(email: Option[String], id: Option[String]): Future[Boolean] = {
-    val queryToDeleteEmail = DeletePostgresQuery(None, email, dbConnectionConfig.tableName)
+  def deleteEmployee(email: Option[String], id: Option[UUID]): Future[Boolean] = {
+    val queryToDeleteEmail = DeletePostgresQuery(id, email, dbConnectionConfig.tableName)
     val deleteStatus       = dbOperations.updateRecordInDb(queryToDeleteEmail)
 
     deleteStatus.onComplete(f => logger.info(s"Employee with email: ${email} has been removed!"))
