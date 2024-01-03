@@ -4,6 +4,7 @@ we would be able to create, delete, update and retrieve employees in the desired
 
 The API architecture was designed to be aligned with the clean architecture and SOLID principles 
 which makes the application reliable and easily modifiable. The way I have organised it is:
+
 <pre><code>
 |-- domain: It is the core of the application. This layer contains the business logic and domain entities
 |   |-- entities: Entities represent the core business object, the EmployeeBase and its instance: Employee 
@@ -19,6 +20,7 @@ which makes the application reliable and easily modifiable. The way I have organ
 |-- ApiDocsGenerator: Piece of code to generate api specifications
 |-- ApiDocsGenerator: Initialization of the API. At the moment, the http framework used (akka http) is hardcoded here, but the code should be able to use any other, a refactor is needed
 </code></pre>
+
 
 For the sake of being able to test the API easily, the configuration by default is using an H2 
 in memory database. This would be enough to test the behaviour of the API and connection 
@@ -63,10 +65,13 @@ The authentication used basic and the accepted set of credentials is hardcoded, 
 ### Database
 As mentioned before, the database used by default by the service is an in memory H2 DB.
 To be able to create it in the docker container, we have to add the schema.sql and data.sql files to the distribution,
-which is done in the build.sbt file here: ```.settings(Universal / mappings := (Universal / mappings).value :+ (file(s"${baseDirectory.value}/src/main/resources/schema.sql") -> "schema.sql") :+ (file(s"${baseDirectory.value}/src/main/resources/data.sql") -> "data.sql"))```
-and them we have to copy those files into the /tmp/ docker's directory.
+which is done in the build.sbt file here: 
+
+<pre><code>.settings(Universal / mappings := (Universal / mappings).value :+ (file(s"${baseDirectory.value}/src/main/resources/schema.sql") -> "schema.sql") :+ (file(s"${baseDirectory.value}/src/main/resources/data.sql") -> "data.sql"))</code></pre>
+
+and then we have to copy those files into the /tmp/ docker's directory.
 That's why the database definition in application.conf looks like:
-```database = "employee_table;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;INIT=RUNSCRIPT FROM '/tmp/schema.sql'\\;RUNSCRIPT FROM '/tmp/data.sql'"```
+<pre><code>database = "employee_table;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;INIT=RUNSCRIPT FROM '/tmp/schema.sql'\\;RUNSCRIPT FROM '/tmp/data.sql'"</code></pre>
 
 Using this configuration, it won't work in local, so for local running it has to be replaced by:
-```database = "employee_table;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;INIT=RUNSCRIPT FROM './src/main/resources/schema.sql'\\;RUNSCRIPT FROM './src/main/resources/data.sql'"```
+<pre><code>database = "employee_table;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;INIT=RUNSCRIPT FROM './src/main/resources/schema.sql'\\;RUNSCRIPT FROM './src/main/resources/data.sql'"</code></pre>
