@@ -51,6 +51,8 @@ This will start the application and it will start accepting requests.
 The configuration used by default is ```host: 0.0.0.0``` and ```port: 8080```
 To check the available methods and some examples of the expected request and response by each of them, refer to the api-specs.yaml.
 
+### Api documentation
+The api documentation in swagger format can be found in the file [api-specs.yaml](api-specs.yaml)
 
 ### Credentials
 
