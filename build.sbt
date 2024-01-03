@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker.*
 
 enablePlugins(JavaAppPackaging)
 
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "1.0.0"
 
 ThisBuild / scalaVersion := "2.13.12"
 

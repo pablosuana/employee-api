@@ -19,6 +19,7 @@ object HttpApplication extends App {
   implicit val as: ActorSystem = ActorSystem()
   private val logger           = LoggerFactory.getLogger(getClass)
   val repository               = new EmployeeRepositoryImplementation
+  val serviceConfig = config.getConfig("service")
 
   val serviceInterface: Route =
     AkkaHttpServerInterpreter()(as.dispatcher).toRoute(new CreateEmployeeEndpoint(repository).endpointToUse) ~
@@ -29,7 +30,7 @@ object HttpApplication extends App {
 
   logger.info("Starting application")
 
-  val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bindFlow(serviceInterface)
+  val bindingFuture = Http().newServerAt(serviceConfig.getString("host"), serviceConfig.getInt("port")).bindFlow(serviceInterface)
   logger.info("Finish application")
   bindingFuture.onComplete {
     case Success(binding) =>
