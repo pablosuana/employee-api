@@ -10,7 +10,7 @@ import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 import java.nio.file.{Files, Paths, StandardOpenOption}
 
 // To execute it, write object ApiDocsGenerator extends App and run it manually
-object ApiDocsGenerator extends App {
+object ApiDocsGenerator {
 
   val info = Info(
     title = "Employee-API",
