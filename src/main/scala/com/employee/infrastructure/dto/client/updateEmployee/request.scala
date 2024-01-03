@@ -4,7 +4,7 @@ import spray.json.RootJsonFormat
 
 import java.util.UUID
 // TODO improve query to not need to pass all of the fields. Query needs to be updated
-case class ServiceRequest(
+case class UpdateEmployeeRequest(
   id: UUID,
   email: String,
   full_name: String,
@@ -12,10 +12,10 @@ case class ServiceRequest(
   hobbies: Seq[String]
 )
 
-object ServiceRequestJsonFormatter {
+object RequestJsonFormatter {
 
   import com.employee.infrastructure.dto.client.CommonJsonFormats._
   import spray.json.DefaultJsonProtocol._
 
-  implicit val serviceRequestJF: RootJsonFormat[ServiceRequest] = jsonFormat5(ServiceRequest)
+  implicit val updateEmployeeRequestJF: RootJsonFormat[UpdateEmployeeRequest] = jsonFormat5(UpdateEmployeeRequest)
 }

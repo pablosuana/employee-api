@@ -5,7 +5,7 @@ import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.GetEmployeeUseCase
 import com.employee.infrastructure.dto.client.ErrorResponse
 import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
-import com.employee.infrastructure.dto.client.getEmployee.{Metadata, Result, ServiceResponse}
+import com.employee.infrastructure.dto.client.getEmployee.{Metadata, Result, GetEmployeeResponse}
 import com.employee.infrastructure.dto.client.getEmployee.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
@@ -21,11 +21,11 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Get Record Response") //.example()
+  private def jsonBodyResponse = jsonBody[GetEmployeeResponse].description("Get Record Response") //.example()
 
   private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
 
-  val endpointDefinition: Endpoint[Unit, UUID, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[Unit, UUID, ErrorResponse, GetEmployeeResponse, Any] =
     endpoint.get
       .in("get-employee")
       .in(query[UUID]("id"))
@@ -46,7 +46,7 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
         if (employeeFound) {
           Future.successful(
             Right(
-              ServiceResponse(
+              GetEmployeeResponse(
                 result = Result(
                   id = UUID.fromString(employee.get.id),
                   email = employee.get.email,
@@ -67,7 +67,7 @@ class GetEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Emplo
     }
   }
 
-  private val serverLogic: UUID => Future[Either[ErrorResponse, ServiceResponse]] = { id =>
+  private val serverLogic: UUID => Future[Either[ErrorResponse, GetEmployeeResponse]] = { id =>
     implicit val ec: ExecutionContext = repository.ec
 
     serverLogicCorrectCredentials(id)

@@ -4,7 +4,7 @@ import com.employee.domain.entities.Employee
 import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.DeleteEmployeeUseCase
 import com.employee.infrastructure.dto.client.ErrorResponse
-import com.employee.infrastructure.dto.client.deleteEmployee.{ServiceRequest, ServiceResponse}
+import com.employee.infrastructure.dto.client.deleteEmployee.{DeleteEmployeeRequest, DeleteEmployeeResponse}
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
@@ -20,15 +20,15 @@ class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising DeleteEmployeeEndpoint endpoint")
 
-  import com.employee.infrastructure.dto.client.deleteEmployee.ServiceRequestJsonFormatter.serviceRequestDeleteEmployeeJF
-  import com.employee.infrastructure.dto.client.deleteEmployee.ServiceResponseJsonFormatter.serviceResponseDeleteEmployeeJF
+  import com.employee.infrastructure.dto.client.deleteEmployee.RequestJsonFormatter.deleteEmployeeRequestJF
+  import com.employee.infrastructure.dto.client.deleteEmployee.ResponseJsonFormatter.deleteEmployeeResponseJF
   import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
 
-  private def jsonBodyRequest = jsonBody[ServiceRequest].description("Delete Record Request").example(Utils.readJsonExample("examples/deleteEmployeeSuccessRequest.json").convertTo[ServiceRequest])
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Delete Record Response").example(Utils.readJsonExample("examples/deleteEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyRequest = jsonBody[DeleteEmployeeRequest].description("Delete Record Request").example(Utils.readJsonExample("examples/deleteEmployeeSuccessRequest.json").convertTo[DeleteEmployeeRequest])
+  private def jsonBodyResponse = jsonBody[DeleteEmployeeResponse].description("Delete Record Response").example(Utils.readJsonExample("examples/deleteEmployeeSuccessfulResponse.json").convertTo[DeleteEmployeeResponse])
   private def jsonBodyError = jsonBody[ErrorResponse].description("Delete Record Error")
 
-  val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[UsernamePassword, DeleteEmployeeRequest, ErrorResponse, DeleteEmployeeResponse, Any] =
     endpoint.put
       .in("delete-employee")
       .in(jsonBodyRequest)
@@ -47,7 +47,7 @@ class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
+  private def serverLogicCorrectCredentials(input: DeleteEmployeeRequest)(implicit ec: ExecutionContext) = {
     try {
       val restrievedResult: Future[Boolean] = DeleteEmployeeUseCase(repository).deleteEmployee(
         id = input.id.map(_.toString),
@@ -56,7 +56,7 @@ class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
       restrievedResult.flatMap { result =>
         Future.successful(
           Right(
-            ServiceResponse(
+            DeleteEmployeeResponse(
               if (result) "deleted" else "not_deleted"
             )
           )
@@ -67,7 +67,7 @@ class DeleteEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  private val serverLogic: Either[ErrorResponse, String] => ServiceRequest => Future[Either[ErrorResponse, ServiceResponse]] = { check => in =>
+  private val serverLogic: Either[ErrorResponse, String] => DeleteEmployeeRequest => Future[Either[ErrorResponse, DeleteEmployeeResponse]] = { check =>in =>
     implicit val ec: ExecutionContext = repository.ec
 
     check match {

@@ -4,8 +4,8 @@ import com.employee.domain.entities.Employee
 import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.GetAllEmployeesUseCase
 import com.employee.infrastructure.dto.client.ErrorResponse
-import com.employee.infrastructure.dto.client.getAllEmployees.{EmployeeData, Metadata, Result, ServiceResponse}
-import com.employee.infrastructure.dto.client.getAllEmployees.ServiceResponseJsonFormatter.serviceResponseGetEmployeeJF
+import com.employee.infrastructure.dto.client.getAllEmployees.{EmployeeData, Metadata, Result, GetAllEmployeesResponse}
+import com.employee.infrastructure.dto.client.getAllEmployees.ServiceResponseJsonFormatter.getAllEmployeesResponseJF
 import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
@@ -21,11 +21,11 @@ class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, E
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Get Record Response") //.example()
+  private def jsonBodyResponse = jsonBody[GetAllEmployeesResponse].description("Get Record Response") //.example()
 
   private def jsonBodyError = jsonBody[ErrorResponse].description("Get Record Error") //.example()
 
-  val endpointDefinition: Endpoint[Unit, Unit, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[Unit, Unit, ErrorResponse, GetAllEmployeesResponse, Any] =
     endpoint.get
       .in("get-all-employees")
       .errorOut(jsonBodyError)
@@ -45,7 +45,7 @@ class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, E
         if (employeeFound) {
           Future.successful(
             Right(
-              ServiceResponse(
+              GetAllEmployeesResponse(
                 employees = employees.map(employee =>
                   EmployeeData(
                     result = Result(
@@ -70,7 +70,7 @@ class GetAllEmployeesEndpoint(repository: EmployeeRepository[PostgresResponse, E
     }
   }
 
-  private val serverLogic: Unit => Future[Either[ErrorResponse, ServiceResponse]] = { id =>
+  private val serverLogic: Unit => Future[Either[ErrorResponse, GetAllEmployeesResponse]] = { id =>
     implicit val ec: ExecutionContext = repository.ec
 
     serverLogicCorrectCredentials

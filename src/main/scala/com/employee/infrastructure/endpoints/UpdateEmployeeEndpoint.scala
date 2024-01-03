@@ -5,9 +5,9 @@ import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.UpdateEmployeeUseCase
 import com.employee.infrastructure.dto.client.ErrorResponse
 import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
-import com.employee.infrastructure.dto.client.updateEmployee.ServiceRequestJsonFormatter.serviceRequestJF
-import com.employee.infrastructure.dto.client.updateEmployee.ServiceResponseJsonFormatter.serviceResponseJF
-import com.employee.infrastructure.dto.client.updateEmployee.{ServiceRequest, ServiceResponse}
+import com.employee.infrastructure.dto.client.updateEmployee.RequestJsonFormatter.updateEmployeeRequestJF
+import com.employee.infrastructure.dto.client.updateEmployee.ResponseJsonFormatter.updateEmployeeResponseJF
+import com.employee.infrastructure.dto.client.updateEmployee.{UpdateEmployeeRequest, UpdateEmployeeResponse}
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
@@ -25,11 +25,11 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising GetAllEmployeesEndpoint endpoint")
 
-  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Update Record Request").example(Utils.readJsonExample("examples/updateEmployeeRequest.json").convertTo[ServiceRequest])
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Update Record Response").example(Utils.readJsonExample("examples/updateEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyRequest  = jsonBody[UpdateEmployeeRequest].description("Update Record Request").example(Utils.readJsonExample("examples/updateEmployeeRequest.json").convertTo[UpdateEmployeeRequest])
+  private def jsonBodyResponse = jsonBody[UpdateEmployeeResponse].description("Update Record Response").example(Utils.readJsonExample("examples/updateEmployeeSuccessfulResponse.json").convertTo[UpdateEmployeeResponse])
   private def jsonBodyError    = jsonBody[ErrorResponse].description("Update Record Error").example(Utils.readJsonExample("examples/updateEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
-  val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[UsernamePassword, UpdateEmployeeRequest, ErrorResponse, UpdateEmployeeResponse, Any] =
     endpoint.put
       .in("update-employee")
       .in(jsonBodyRequest)
@@ -48,7 +48,7 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
  // TODO this is not right, double check it
-  private def serverLogicCorrectCredentials(input: ServiceRequest, idToUpdate: String)(implicit ec: ExecutionContext) = {
+  private def serverLogicCorrectCredentials(input: UpdateEmployeeRequest, idToUpdate: String)(implicit ec: ExecutionContext) = {
     try {
       val timestamp = new Timestamp(new Date().getTime)
       val updateStatus = UpdateEmployeeUseCase(repository).updateEmployee(
@@ -63,7 +63,7 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
       )
       updateStatus.flatMap { f =>
         if (f)
-          Future.successful(Right(ServiceResponse(input.id, input.email, timestamp.toString)))
+          Future.successful(Right(UpdateEmployeeResponse(input.id, input.email, timestamp.toString)))
         else
           Future.successful(Left(ErrorResponse(400, "Employee was not updated")))
       }
@@ -72,7 +72,7 @@ class UpdateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  private val serverLogic: Either[ErrorResponse, String] => ServiceRequest => Future[Either[ErrorResponse, ServiceResponse]] = { check => in =>
+  private val serverLogic: Either[ErrorResponse, String] => UpdateEmployeeRequest => Future[Either[ErrorResponse, UpdateEmployeeResponse]] = { check =>in =>
     implicit val ec: ExecutionContext = repository.ec
 
     check match {

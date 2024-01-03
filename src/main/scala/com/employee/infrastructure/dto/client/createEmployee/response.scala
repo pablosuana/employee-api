@@ -4,17 +4,17 @@ import spray.json.RootJsonFormat
 
 import java.util.UUID
 
-case class ServiceResponse(
+case class CreateEmployeeResponse(
   id: UUID = UUID.randomUUID(),
   email: String,
   status: String,
   updated_at: String
 )
 
-object ServiceResponseJsonFormatter {
+object ResponseJsonFormatter {
 
   import com.employee.infrastructure.dto.client.CommonJsonFormats._
   import spray.json.DefaultJsonProtocol._
 
-  implicit val serviceResponseJF: RootJsonFormat[ServiceResponse] = jsonFormat4(ServiceResponse)
+  implicit val createaEmployeeResponseJF: RootJsonFormat[CreateEmployeeResponse] = jsonFormat4(CreateEmployeeResponse)
 }

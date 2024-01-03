@@ -21,14 +21,14 @@ case class EmployeeData(
   metadata: Metadata
 )
 
-case class ServiceResponse(employees: Seq[EmployeeData])
+case class GetAllEmployeesResponse(employees: Seq[EmployeeData])
 
 object ServiceResponseJsonFormatter {
 
   import com.employee.infrastructure.dto.client.CommonJsonFormats._
 
-  implicit val metadataJF: RootJsonFormat[Metadata]                          = jsonFormat1(Metadata)
-  implicit val resultJF: RootJsonFormat[Result]                              = jsonFormat5(Result)
-  implicit val employeeDataJF: RootJsonFormat[EmployeeData]                  = jsonFormat2(EmployeeData)
-  implicit val serviceResponseGetEmployeeJF: RootJsonFormat[ServiceResponse] = jsonFormat1(ServiceResponse)
+  implicit val metadataJF: RootJsonFormat[Metadata]                               = jsonFormat1(Metadata)
+  implicit val resultJF: RootJsonFormat[Result]                                   = jsonFormat5(Result)
+  implicit val employeeDataJF: RootJsonFormat[EmployeeData]                       = jsonFormat2(EmployeeData)
+  implicit val getAllEmployeesResponseJF: RootJsonFormat[GetAllEmployeesResponse] = jsonFormat1(GetAllEmployeesResponse)
 }

@@ -1,19 +1,19 @@
 package com.employee.infrastructure.dto.client.updateEmployee
 
-import spray.json.DefaultJsonProtocol.{StringJsonFormat, jsonFormat3}
+import spray.json.DefaultJsonProtocol.{jsonFormat3, StringJsonFormat}
 import spray.json.RootJsonFormat
 
 import java.util.UUID
 
-case class ServiceResponse(
+case class UpdateEmployeeResponse(
   id: UUID = UUID.randomUUID(),
   email: String,
   updated_at: String
 )
 
-object ServiceResponseJsonFormatter {
+object ResponseJsonFormatter {
 
   import com.employee.infrastructure.dto.client.CommonJsonFormats._
 
-  implicit val serviceResponseJF: RootJsonFormat[ServiceResponse] = jsonFormat3(ServiceResponse)
+  implicit val updateEmployeeResponseJF: RootJsonFormat[UpdateEmployeeResponse] = jsonFormat3(UpdateEmployeeResponse)
 }

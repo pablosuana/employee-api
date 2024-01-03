@@ -2,16 +2,16 @@ package com.employee.infrastructure.dto.client.createEmployee
 
 import spray.json.RootJsonFormat
 
-case class ServiceRequest(
+case class CreateEmployeeRequest(
   email: String,
   full_name: String,
   date_of_birth: String,
   hobbies: Seq[String]
 )
 
-object ServiceRequestJsonFormatter {
+object RequestJsonFormatter {
 
   import spray.json.DefaultJsonProtocol._
 
-  implicit val serviceRequestJF: RootJsonFormat[ServiceRequest] = jsonFormat4(ServiceRequest)
+  implicit val createEmploymentRequestJF: RootJsonFormat[CreateEmployeeRequest] = jsonFormat4(CreateEmployeeRequest)
 }

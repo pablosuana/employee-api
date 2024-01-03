@@ -4,7 +4,7 @@ import com.employee.domain.entities.Employee
 import com.employee.domain.interfaces.EmployeeRepository
 import com.employee.domain.useCases.{CreateEmployeeUseCase, EmailAlreadyInDbUseCase}
 import com.employee.infrastructure.dto.client.ErrorResponse
-import com.employee.infrastructure.dto.client.createEmployee.{ServiceRequest, ServiceResponse}
+import com.employee.infrastructure.dto.client.createEmployee.{CreateEmployeeRequest, CreateEmployeeResponse}
 import com.employee.infrastructure.dto.db.PostgresResponse
 import org.slf4j.LoggerFactory
 import sttp.model.StatusCode
@@ -24,15 +24,15 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
   private val logger = LoggerFactory.getLogger(getClass)
   logger.info(s"Initialising CreateEmployee endpoint")
 
-  import com.employee.infrastructure.dto.client.createEmployee.ServiceRequestJsonFormatter.serviceRequestJF
-  import com.employee.infrastructure.dto.client.createEmployee.ServiceResponseJsonFormatter.serviceResponseJF
+  import com.employee.infrastructure.dto.client.createEmployee.RequestJsonFormatter.createEmploymentRequestJF
+  import com.employee.infrastructure.dto.client.createEmployee.ResponseJsonFormatter.createaEmployeeResponseJF
   import com.employee.infrastructure.dto.client.ErrorResponseJsonFormat.errorResponseJsonFormat
 
-  private def jsonBodyRequest  = jsonBody[ServiceRequest].description("Create Record Request").example(Utils.readJsonExample("examples/createEmployeeRequest.json").convertTo[ServiceRequest])
-  private def jsonBodyResponse = jsonBody[ServiceResponse].description("Create Record Response").example(Utils.readJsonExample("examples/createEmployeeSuccessfulResponse.json").convertTo[ServiceResponse])
+  private def jsonBodyRequest  = jsonBody[CreateEmployeeRequest].description("Create Record Request").example(Utils.readJsonExample("examples/createEmployeeRequest.json").convertTo[CreateEmployeeRequest])
+  private def jsonBodyResponse = jsonBody[CreateEmployeeResponse].description("Create Record Response").example(Utils.readJsonExample("examples/createEmployeeSuccessfulResponse.json").convertTo[CreateEmployeeResponse])
   private def jsonBodyError    = jsonBody[ErrorResponse].description("Create Record Error").example(Utils.readJsonExample("examples/createEmployeeErrorResponse.json").convertTo[ErrorResponse])
 
-  val endpointDefinition: Endpoint[UsernamePassword, ServiceRequest, ErrorResponse, ServiceResponse, Any] =
+  val endpointDefinition: Endpoint[UsernamePassword, CreateEmployeeRequest, ErrorResponse, CreateEmployeeResponse, Any] =
     endpoint.post
       .in("create-employee")
       .in(jsonBodyRequest)
@@ -51,7 +51,7 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  def serverLogicIfEmailNotInDb(input: ServiceRequest)(implicit ec: ExecutionContext): Future[Either[ErrorResponse, ServiceResponse]] = {
+  def serverLogicIfEmailNotInDb(input: CreateEmployeeRequest)(implicit ec: ExecutionContext): Future[Either[ErrorResponse, CreateEmployeeResponse]] = {
     try {
       val timestamp = new Timestamp(new Date().getTime)
       val employee = Employee(
@@ -66,7 +66,7 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
       )
       creationStatus.flatMap { f =>
         val status = if (f) "completed" else "failed"
-        Future.successful(Right(ServiceResponse(employee.id, input.email, status, timestamp.toString)))
+        Future.successful(Right(CreateEmployeeResponse(employee.id, input.email, status, timestamp.toString)))
       }
     } catch {
       case e: Exception =>
@@ -75,7 +75,7 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
     }
   }
 
-  private def serverLogicCorrectCredentials(input: ServiceRequest)(implicit ec: ExecutionContext) = {
+  private def serverLogicCorrectCredentials(input: CreateEmployeeRequest)(implicit ec: ExecutionContext) = {
 
     val isEmailInDb = EmailAlreadyInDbUseCase(repository).isEmailInDb(input.email)
 
@@ -87,7 +87,7 @@ class CreateEmployeeEndpoint(repository: EmployeeRepository[PostgresResponse, Em
 
   }
 
-  private val serverLogic: Either[ErrorResponse, String] => ServiceRequest => Future[Either[ErrorResponse, ServiceResponse]] = { check => in =>
+  private val serverLogic: Either[ErrorResponse, String] => CreateEmployeeRequest => Future[Either[ErrorResponse, CreateEmployeeResponse]] = { check =>in =>
     implicit val ec: ExecutionContext = repository.ec
     logger.info(s"Request received in create-employee endpoint")
     check match {

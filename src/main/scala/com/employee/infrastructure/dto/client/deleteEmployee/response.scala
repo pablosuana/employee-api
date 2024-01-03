@@ -1,13 +1,13 @@
 package com.employee.infrastructure.dto.client.deleteEmployee
 
-import spray.json.DefaultJsonProtocol.{StringJsonFormat, jsonFormat1}
+import spray.json.DefaultJsonProtocol.{jsonFormat1, StringJsonFormat}
 import spray.json.RootJsonFormat
 
-case class ServiceResponse(
+case class DeleteEmployeeResponse(
   status: String
 )
 
-object ServiceResponseJsonFormatter {
+object ResponseJsonFormatter {
 
-  implicit val serviceResponseDeleteEmployeeJF: RootJsonFormat[ServiceResponse] = jsonFormat1(ServiceResponse)
+  implicit val deleteEmployeeResponseJF: RootJsonFormat[DeleteEmployeeResponse] = jsonFormat1(DeleteEmployeeResponse)
 }

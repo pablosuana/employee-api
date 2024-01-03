@@ -4,15 +4,15 @@ import spray.json.RootJsonFormat
 
 import java.util.UUID
 
-case class ServiceRequest(
+case class DeleteEmployeeRequest(
   id: Option[UUID],
   email: Option[String]
 )
 
-object ServiceRequestJsonFormatter {
+object RequestJsonFormatter {
 
   import com.employee.infrastructure.dto.client.CommonJsonFormats._
   import spray.json.DefaultJsonProtocol._
 
-  implicit val serviceRequestDeleteEmployeeJF: RootJsonFormat[ServiceRequest] = jsonFormat2(ServiceRequest)
+  implicit val deleteEmployeeRequestJF: RootJsonFormat[DeleteEmployeeRequest] = jsonFormat2(DeleteEmployeeRequest)
 }
